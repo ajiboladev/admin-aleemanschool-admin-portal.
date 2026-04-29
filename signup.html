@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Signup — Aleeman School Portal</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #1a5c2a;
+      --primary-dark: #0f3b1a;
+      --primary-mid: #2d8c4e;
+      --accent: #52b788;
+      --accent-light: #d8f3dc;
+      --red: #c62828;
+      --red-light: #ffebee;
+      --text: #1a2e1c;
+      --text-muted: #5a6a5c;
+      --border: #c8e6c9;
+      --bg: #f4faf5;
+      --white: #ffffff;
+      --shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #0f3b1a, #1a5c2a, #2d8c4e);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .signup-container {
+      width: 100%;
+      max-width: 500px;
+      background: var(--white);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform 0.2s ease;
+    }
+
+    .signup-header {
+      background: var(--primary-dark);
+      padding: 1.6rem 2rem;
+      text-align: center;
+      color: white;
+    }
+
+    .signup-header .logo-icon {
+      font-size: 2.8rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .signup-header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .signup-header p {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      margin-top: 0.3rem;
+    }
+
+    .signup-body {
+      padding: 2rem 2rem 2rem 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.3rem;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.3px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      background: var(--white);
+      outline: none;
+      font-family: inherit;
+    }
+
+    .form-group input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26, 92, 42, 0.1);
+    }
+
+    .form-group input::placeholder {
+      color: #bfcfc0;
+      font-weight: 400;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border-radius: 40px;
+      border: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(26, 92, 42, 0.3);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      transform: none;
+      cursor: not-allowed;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--primary);
+      color: var(--primary);
+      margin-top: 0.5rem;
+    }
+
+    .btn-outline:hover {
+      background: var(--accent-light);
+      transform: none;
+      box-shadow: none;
+    }
+
+    .message-box {
+      background: var(--accent-light);
+      border-radius: 16px;
+      padding: 0.8rem 1rem;
+      margin-top: 1.2rem;
+      font-size: 0.85rem;
+      text-align: center;
+      color: var(--primary-dark);
+      border-left: 5px solid var(--primary);
+      display: none;
+    }
+
+    .message-box.error {
+      background: var(--red-light);
+      color: var(--red);
+      border-left-color: var(--red);
+    }
+
+    .message-box.success {
+      background: #e0f2e5;
+      color: var(--primary);
+      border-left-color: var(--primary);
+    }
+
+    .message-box.show {
+      display: block;
+    }
+
+    .footer-links {
+      text-align: center;
+      margin-top: 1.8rem;
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1.3rem;
+    }
+
+    .footer-links a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    .key-hint {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+      display: inline-block;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 550px) {
+      .signup-body {
+        padding: 1.5rem;
+      }
+      .signup-header {
+        padding: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="signup-container">
+  <div class="signup-header">
+    <span class="logo-icon">🛡️👑</span>
+    <h1>Admin Registration</h1>
+    <p>Aleeman School of Science & Arabic Studies</p>
+  </div>
+
+  <div class="signup-body">
+    <form id="admin-signup-form" autocomplete="off">
+      <div class="form-group">
+        <label>📛 Full Name</label>
+        <input type="text" id="admin-name" placeholder="e.g., Alhaji Umar Sani" required autocomplete="name">
+      </div>
+
+      <div class="form-group">
+        <label>📧 Email Address</label>
+        <input type="email" id="admin-email" placeholder="admin@aleeman.edu.ng" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label>🔒 Password</label>
+        <input type="password" id="admin-password" placeholder="At least 6 characters" required autocomplete="new-password">
+      </div>
+
+      <div class="form-group">
+        <label>✓ Confirm Password</label>
+        <input type="password" id="admin-confirm-password" placeholder="Confirm password" required autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label>🔑 Admin Registration Key</label>
+        <input type="password" id="admin-secret-key" placeholder="School admin security key" required>
+        <span class="key-hint">* Contact existing admin to obtain the key</span>
+      </div>
+
+      <div class="message-box" id="signup-message"></div>
+
+      <button type="submit" class="btn" id="signup-btn">
+        <span>✨</span> Create Admin Account
+      </button>
+    </form>
+
+    <div class="footer-links">
+      <a href="#" id="goto-login-link">← Back to Admin Login</a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  // ======================= FIREBASE CONFIG (same as main portal) =======================
+  const firebaseConfig = {
+    apiKey: "AIzaSyD8fS0g_IU9RKBdyhx-WmFZZbttEbCC464",
+    authDomain: "aleeman-school.firebaseapp.com",
+    projectId: "aleeman-school",
+    storageBucket: "aleeman-school.firebasestorage.app",
+    messagingSenderId: "1095322007489",
+    appId: "1:1095322007489:web:0e43cb98bd514f0ea7e140"
+  };
+
+  // Import Firebase Modules (v10.12.2)
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // DOM Elements
+  const form = document.getElementById('admin-signup-form');
+  const nameInput = document.getElementById('admin-name');
+  const emailInput = document.getElementById('admin-email');
+  const passwordInput = document.getElementById('admin-password');
+  const confirmInput = document.getElementById('admin-confirm-password');
+  const secretInput = document.getElementById('admin-secret-key');
+  const signupBtn = document.getElementById('signup-btn');
+  const messageBox = document.getElementById('signup-message');
+
+  // ======================= ADMIN SIGNUP KEY (SECURE) =======================
+  // In production, this should be stored in environment / Firebase Functions
+  // but for this standalone signup page, we use a strong secret key that only authorised people know.
+  // You can change this key to any strong value and share with your super admins.
+  const VALID_ADMIN_KEY = "ALEEMAN_SUPER_ADMIN_2025";
+  // For extra safety, you may also check against a Firestore document, but this is a clean offline check.
+
+  // Helper: show message
+  function showMessage(text, isError = false) {
+    messageBox.textContent = text;
+    messageBox.className = 'message-box show';
+    if (isError) {
+      messageBox.classList.add('error');
+    } else {
+      messageBox.classList.add('success');
+    }
+    // auto hide after 5 seconds for success, but keep errors? better to keep errors until next action.
+    if (!isError) {
+      setTimeout(() => {
+        if (messageBox.classList.contains('success')) messageBox.classList.remove('show');
+      }, 5000);
+    }
+  }
+
+  function clearMessage() {
+    messageBox.classList.remove('show', 'error', 'success');
+    messageBox.textContent = '';
+  }
+
+  // loading state
+  function setLoading(loading) {
+    if (loading) {
+      signupBtn.disabled = true;
+      signupBtn.innerHTML = '<span class="spinner"></span> Creating account...';
+    } else {
+      signupBtn.disabled = false;
+      signupBtn.innerHTML = '<span>✨</span> Create Admin Account';
+    }
+  }
+
+  // Validate email format
+  function isValidEmail(email) {
+    return /^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/.test(email);
+  }
+
+  // Main signup handler
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearMessage();
+
+    // Get values
+    const fullName = nameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    const confirmPassword = confirmInput.value;
+    const secretKey = secretInput.value.trim();
+
+    // Validation
+    if (!fullName || !email || !password || !confirmPassword || !secretKey) {
+      showMessage('❌ All fields are required.', true);
+      return;
+    }
+
+    if (fullName.length < 3) {
+      showMessage('❌ Please enter a valid full name (at least 3 characters).', true);
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      showMessage('❌ Please enter a valid email address (e.g., admin@aleeman.edu.ng).', true);
+      return;
+    }
+
+    if (password.length < 6) {
+      showMessage('❌ Password must be at least 6 characters long.', true);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      showMessage('❌ Passwords do not match.', true);
+      return;
+    }
+
+    // Admin Registration Key verification
+    if (secretKey !== VALID_ADMIN_KEY) {
+      showMessage('⛔ Invalid Admin Registration Key. Access denied.', true);
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // 1) Create Firebase Auth user
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const uid = user.uid;
+
+      // 2) Check if admin document already exists (avoid duplicate override)
+      const adminDocRef = doc(db, 'admins', uid);
+      const existingSnap = await getDoc(adminDocRef);
+      if (existingSnap.exists()) {
+        // This scenario rarely happens because uid is unique, but just in case
+        await user.delete(); // rollback auth user
+        setLoading(false);
+        showMessage('⚠️ Admin profile already exists with this account. Please use different email or contact support.', true);
+        return;
+      }
+
+      // 3) Create admin document in Firestore with required fields (matches dashboard expectations)
+      await setDoc(adminDocRef, {
+        name: fullName,
+        email: email,
+        role: 'super_admin',
+        createdAt: new Date().toISOString(),
+        uid: uid,
+        isActive: true
+      });
+
+      // 4) Optionally sign out to force fresh login on dashboard (good practice)
+      await signOut(auth);
+
+      // Show success message & redirect after delay
+      showMessage(`✅ Admin "${fullName}" created successfully! Redirecting to login page...`, false);
+      
+      // Redirect to the admin portal login page (the main dashboard HTML file)
+      // Since the user likely has the main file named "index.html" / "admin-dashboard.html", 
+      // we assume the parent directory contains the original admin panel.
+      // The original admin panel is typically the file where this signup page will be linked from.
+      // We'll redirect to "admin.html" or the provided dashboard. For safety we redirect to "../index.html"
+      // but because the file structure can vary, we give a generic redirect to same directory's "admin-login.html".
+      // However the existing portal (full admin page) uses the login embedded. 
+      // We will redirect to the main portal page (the same as the file they gave) – they said "the admin dashboard html file".
+      // So we redirect to "admin-dashboard.html" or current location root. For better UX, we redirect to './admin.html'?
+      // But we cannot assume filename, but we will redirect to '/' or 'index.html' within same folder.
+      // Provide a manual click link anyway, plus auto redirect.
+      
+      setTimeout(() => {
+        // After signup, go to the admin login (which is the main dashboard file)
+        // Typically the main dashboard file is named "index.html" or "admin.html".
+        // we'll redirect to "./index.html" because the original file likely is the root of admin panel.
+        window.location.href = './index.html';
+      }, 2000);
+
+    } catch (error) {
+      console.error("Signup error:", error);
+      let friendlyMsg = "❌ Registration failed. ";
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          friendlyMsg = "❌ This email is already registered. Please use a different email or log in.";
+          break;
+        case 'auth/weak-password':
+          friendlyMsg = "❌ Password is too weak. Use at least 6 characters.";
+          break;
+        case 'auth/invalid-email':
+          friendlyMsg = "❌ Invalid email format.";
+          break;
+        case 'auth/network-request-failed':
+          friendlyMsg = "❌ Network error. Check your connection.";
+          break;
+        default:
+          friendlyMsg = `❌ ${error.message || "Something went wrong. Please try again."}`;
+      }
+      showMessage(friendlyMsg, true);
+      setLoading(false);
+    }
+  });
+
+  // Link to go back to login (the dashboard index page)
+  const goToLoginLink = document.getElementById('goto-login-link');
+  goToLoginLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    // Assuming the main admin dashboard file is "index.html" in the same directory
+    // If you rename the original dashboard file to "admin.html", adjust here.
+    // The user's original code represents the full admin portal, we redirect there.
+    window.location.href = './index.html';
+  });
+
+  // Bonus: add slight real-time validation on confirm password
+  const confirmInputField = confirmInput;
+  const passwordField = passwordInput;
+  function checkPasswordsSync() {
+    if (confirmInputField.value && passwordField.value !== confirmInputField.value) {
+      confirmInputField.setCustomValidity("Passwords don't match");
+    } else {
+      confirmInputField.setCustomValidity('');
+    }
+  }
+  passwordField.addEventListener('input', checkPasswordsSync);
+  confirmInputField.addEventListener('input', checkPasswordsSync);
+</script>
+</body>
+</html>
