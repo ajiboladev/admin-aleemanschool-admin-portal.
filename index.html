@@ -274,6 +274,18 @@
     #toast.error   { background:var(--red); color:var(--white); }
     #toast.info    { background:var(--blue); color:var(--white); }
 
+
+    /* Password eye toggle — login */
+      .pw-wrap { position:relative; }
+      .pw-wrap input { padding-right:2.6rem !important; }
+      .pw-eye { position:absolute; right:.65rem; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--muted); font-size:1rem; padding:.15rem; line-height:1; }
+      .pw-eye:hover { color:var(--p2); }
+      /* Subject password eye toggle */
+      .subj-pw-wrap { position:relative; flex:1; display:flex; align-items:center; }
+      .subj-pw-wrap input { width:100%; padding-right:2.2rem !important; }
+      .subj-pw-eye { position:absolute; right:.45rem; background:none; border:none; cursor:pointer; font-size:.88rem; color:var(--muted); padding:.1rem; line-height:1; }
+      .subj-pw-eye:hover { color:var(--p2); }
+
     code { background:#eef2ee; padding:.1rem .4rem; border-radius:4px; font-size:.82em; }
 
     @media (max-width:720px) {
@@ -298,7 +310,14 @@
     <h1>Admin Login</h1>
     <p class="sub">Aleeman School of Science &amp; Arabic Studies</p>
     <div class="fg"><label>Email Address</label><input type="email" id="l-email" placeholder="admin@aleeman.edu.ng" autocomplete="email" /></div>
-    <div class="fg"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password" /></div>
+    <div class="fg">
+      <label>Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password" />
+        <button class="pw-eye" type="button" id="admin-login-pw-eye" title="Show/hide password">👁️</button>
+      </div>
+    </div>
+
     <button class="btn btn-primary btn-full" id="login-btn">Sign In</button>
     <div class="err" id="login-err"></div>
     <!-- <p style="margin-top:1.25rem;font-size:.78rem;color:var(--muted)"><a href="./index.html" style="color:var(--p2)">← Back to Portal Home</a></p> -->
@@ -731,6 +750,27 @@ async function doLogin() {
     showLoginErr(m[err.code]||'Login failed.'); setBtn(btn, false);
   }
 }
+
+
+/* ── Admin login password eye toggle ── */
+document.getElementById('admin-login-pw-eye')?.addEventListener('click', function() {
+  const inp = document.getElementById('l-pass');
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  this.textContent = show ? '🙈' : '👁️';
+});
+
+/* ── Subject password eye toggle ── */
+window._toggleSubjPw = btn => {
+  const inp = btn.previousElementSibling;
+  if (!inp) return;
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  btn.textContent = show ? '🙈' : '👁️';
+};
+
+
+
 $('login-btn').addEventListener('click', doLogin);
 ['l-email','l-pass'].forEach(id => $(id).addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); }));
 
@@ -908,7 +948,10 @@ function renderSubjects(containerId, nameList, passMap) {
   $(containerId).innerHTML = nameList.map(s => `
     <div class="subj-item">
       <input type="text" class="subj-name-inp" value="${esc(s)}" placeholder="Subject name" />
-      <input type="password" class="subj-pass-inp" value="${esc(passMap[s]||'')}" placeholder="Subject password (required)" autocomplete="new-password" />
+      <div class="subj-pw-wrap">
+        <input type="password" class="subj-pass-inp" value="${esc(passMap[s]||'')}" placeholder="Subject password (required)" autocomplete="new-password" />
+        <button class="subj-pw-eye" type="button" onclick="window._toggleSubjPw(this)" title="Show/hide">👁️</button>
+      </div>
       <button class="subj-remove" onclick="this.parentElement.remove()" title="Remove">✕</button>
     </div>`).join('');
 }
@@ -935,11 +978,16 @@ function getSubjectsAndPasswords(containerId) {
 function addSubjectItem(containerId) {
   const item=document.createElement('div'); item.className='subj-item';
   item.innerHTML=`<input type="text" class="subj-name-inp" placeholder="Subject name" />
-    <input type="password" class="subj-pass-inp" placeholder="Subject password (required)" autocomplete="new-password" />
+    <div class="subj-pw-wrap">
+      <input type="password" class="subj-pass-inp" placeholder="Subject password (required)" autocomplete="new-password" />
+      <button class="subj-pw-eye" type="button" onclick="window._toggleSubjPw(this)" title="Show/hide">👁️</button>
+    </div>
     <button class="subj-remove" onclick="this.parentElement.remove()">✕</button>`;
   $(containerId).appendChild(item);
   item.querySelector('.subj-name-inp').focus();
 }
+
+
 $('add-jss-subject').addEventListener('click', () => addSubjectItem('jss-subjects-list'));
 $('add-ss-subject').addEventListener('click',  () => addSubjectItem('ss-subjects-list'));
 
