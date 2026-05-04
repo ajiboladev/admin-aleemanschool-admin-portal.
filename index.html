@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,6 +17,8 @@
 
 
 
+    <script>window.FLOATING_TEXT = 'Proudly 2025/2026';</script>
+<script src="floating.js"></script>
   
   
 
@@ -455,6 +458,7 @@
           <button class="tab-btn" data-tab="session">📅 Session</button>
           <button class="tab-btn" data-tab="assessment">📝 Assessment</button>
           <button class="tab-btn" data-tab="subjects">📚 Subjects</button>
+          <button class="tab-btn" data-tab="remarks">🗒️ Remarks</button>
         </div>
 
         <div class="tab-panel active" id="tab-school">
@@ -530,6 +534,23 @@
             <button class="btn btn-ghost btn-sm" id="add-ss-subject" style="margin-top:.75rem">+ Add SS Subject</button>
           </div>
           <button class="btn btn-primary" id="save-subjects-btn">💾 Save Subjects &amp; Passwords</button>
+        </div>
+        <div class="tab-panel" id="tab-remarks">
+          <div class="settings-card">
+            <h4>🗒️ Remarks Passwords (Per Class)</h4>
+            <div class="info-box">Each class has its own remark password. Teachers must enter the class remark password to add or edit the <strong>Teacher</strong> and <strong>Principal</strong> remarks on a student's result.</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+              <div class="fg"><label>JSS1</label><input id="rp-JSS1" class="subj-pass-inp" type="password" placeholder="Password for JSS1" autocomplete="new-password" /></div>
+              <div class="fg"><label>JSS2</label><input id="rp-JSS2" class="subj-pass-inp" type="password" placeholder="Password for JSS2" autocomplete="new-password" /></div>
+              <div class="fg"><label>JSS3</label><input id="rp-JSS3" class="subj-pass-inp" type="password" placeholder="Password for JSS3" autocomplete="new-password" /></div>
+              <div class="fg"><label>SS1</label><input id="rp-SS1" class="subj-pass-inp" type="password" placeholder="Password for SS1" autocomplete="new-password" /></div>
+              <div class="fg"><label>SS2</label><input id="rp-SS2" class="subj-pass-inp" type="password" placeholder="Password for SS2" autocomplete="new-password" /></div>
+              <div class="fg"><label>SS3</label><input id="rp-SS3" class="subj-pass-inp" type="password" placeholder="Password for SS3" autocomplete="new-password" /></div>
+            </div>
+            <div style="margin-top:.75rem">
+              <button class="btn btn-primary" id="save-remarks-btn">💾 Save Remarks Passwords</button>
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -827,12 +848,13 @@ async function loadStats() {
 /* ── Settings ── */
 async function loadSettings() {
   try {
-    const [schoolSnap,sessSnap,assessSnap,subjSnap,passSnap] = await Promise.all([
+    const [schoolSnap,sessSnap,assessSnap,subjSnap,passSnap,remarkSnap] = await Promise.all([
       getDoc(doc(db,'settings','school')),
       getDoc(doc(db,'settings','session')),
       getDoc(doc(db,'settings','assessment')),
       getDoc(doc(db,'settings','subjects')),
       getDoc(doc(db,'settings','subjectPasswords')),
+      getDoc(doc(db,'settings','remarkPasswords')),
     ]);
     if (schoolSnap.exists()) {
       const d=schoolSnap.data();
@@ -855,6 +877,14 @@ async function loadSettings() {
     const ssPass   = passSnap.exists() ? (passSnap.data().SS||{}) : {};
     renderSubjects('jss-subjects-list', jssNames, jssPass);
     renderSubjects('ss-subjects-list',  ssNames,  ssPass);
+    // Remarks passwords per class
+    if (remarkSnap.exists()) {
+      const rp = remarkSnap.data() || {};
+      ['JSS1','JSS2','JSS3','SS1','SS2','SS3'].forEach(c=>{
+        const el = document.getElementById(`rp-${c}`);
+        if (el) el.value = rp[c] || '';
+      });
+    }
   } catch(err) { console.error('Settings:',err); toast('Could not load settings.','error'); }
 }
 
@@ -903,6 +933,18 @@ $('save-assessment-btn').addEventListener('click', async () => {
     await setDoc(doc(db,'settings','assessment'),{tests:testsConfig,caMax:30,examMax:70,updatedAt:serverTimestamp()});
     toast('Assessment configuration saved!');
   } catch(err) { toast('Failed to save.','error'); }
+  finally { setBtn(btn,false); }
+});
+
+/* ── Remarks passwords (per class) ── */
+$('save-remarks-btn').addEventListener('click', async () => {
+  const btn=$('save-remarks-btn'); setBtn(btn,true);
+  try {
+    const rp = {};
+    ['JSS1','JSS2','JSS3','SS1','SS2','SS3'].forEach(c=>{ const v=(document.getElementById(`rp-${c}`)?.value||'').trim(); if(v) rp[c]=v; });
+    await setDoc(doc(db,'settings','remarkPasswords'), {...rp, updatedAt:serverTimestamp()});
+    toast('Remarks passwords saved!');
+  } catch(err) { console.error(err); toast('Failed to save remarks passwords.','error'); }
   finally { setBtn(btn,false); }
 });
 
